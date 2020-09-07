@@ -1,0 +1,5 @@
+print("Hello You!, Ik ben Lucas")
+print("Wie ben jij?")
+name = input()
+print("Hello " + name)
+input()
