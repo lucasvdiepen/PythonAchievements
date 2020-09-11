@@ -1,4 +1,5 @@
 import datetime
+from time
 
 while True:
     print("Hello You!, Ik ben Lucas")
@@ -12,6 +13,7 @@ while True:
             break
         elif againInput.upper() == "N":
             print("Oke. Dankjewel")
+            time.sleep(1)
             exit()
         else:
             print("\nKies tussen Y of N")
