@@ -1,5 +1,5 @@
 import datetime
-from time
+import time
 
 while True:
     print("Hello You!, Ik ben Lucas")
