@@ -61,8 +61,7 @@ while True:
     while True:
         againInput = input(name + " wil jij dit programma nog een keer doen? Type Y/N: ")
         if againInput.upper() == "Y":
-            for i in range(3):
-                print("")
+            print("\n\n")
             break
         elif againInput.upper() == "N":
             print("Oke. Dankjewel")
