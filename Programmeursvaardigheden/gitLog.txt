@@ -1,0 +1,57 @@
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03> git branch                                                              
+  Develop
+  Feature
+* master
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03> git log                                                               
+commit 65182f8a78aaa687ec9babe17673139d9fabc788 (HEAD -> master)
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:11:07 2020 +0200
+
+    vierde commit
+
+commit fd320bd38df7e6b2e5e1c78e9c65ae163b8800be
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:08:13 2020 +0200
+
+    eerste commit
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03> git checkout Develop                                                  
+Switched to branch 'Develop'
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03> git log                                                               
+commit 47bcb2f4bfec291a163cd9bf4e4d3e489b310709 (HEAD -> Develop)
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:11:53 2020 +0200
+
+    vijfde commit
+
+commit 2fbca8ac48669197e55cf0a2139be8e9f13cbf19
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:09:40 2020 +0200
+
+    tweede commit
+
+commit fd320bd38df7e6b2e5e1c78e9c65ae163b8800be
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:08:13 2020 +0200
+
+    eerste commit
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03> git checkout Feature                                                  
+Switched to branch 'Feature'
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03> git log                                                               
+commit 3d69134f77a385260cc71716d66ceab1ae4488c2 (HEAD -> Feature)
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:12:59 2020 +0200
+
+    zesde commit
+
+commit 4563cfa4751d5e36e9ccf29f44843c37651f17bc
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:10:27 2020 +0200
+
+    derde commit
+
+commit fd320bd38df7e6b2e5e1c78e9c65ae163b8800be
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 15:08:13 2020 +0200
+
+    eerste commit
+PS C:\Users\Lucas\f1m1\pvaardig\Les03\Opdracht03>

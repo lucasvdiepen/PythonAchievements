@@ -1,0 +1,36 @@
+PS C:\Users\Lucas\f1m1\pvaardig\Les03> git log                                                                          commit ded927b050005ca837ad2c06347c2444c5e3e5d8 (HEAD -> master)
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 14:30:23 2020 +0200
+
+    vierde test
+
+commit 90e1770e64b3ce93ac288121386bfc6db0d57651
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 14:22:37 2020 +0200
+
+    tweede test
+
+commit 9361cd35e93763e7597864d773bdfe83397d381c
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 14:20:14 2020 +0200
+
+    eerste test
+PS C:\Users\Lucas\f1m1\pvaardig\Les03> git checkout newBranch                                                           Switched to branch 'newBranch'
+PS C:\Users\Lucas\f1m1\pvaardig\Les03> git log                                                                          commit 89d185011e4f4b24d34e9c2714f01af9eacedd48 (HEAD -> newBranch)
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 14:26:58 2020 +0200
+
+    derde test
+
+commit 90e1770e64b3ce93ac288121386bfc6db0d57651
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 14:22:37 2020 +0200
+
+    tweede test
+
+commit 9361cd35e93763e7597864d773bdfe83397d381c
+Author: Lucas van Diepen <lucascool@ziggo.nl>
+Date:   Tue Sep 15 14:20:14 2020 +0200
+
+    eerste test
+PS C:\Users\Lucas\f1m1\pvaardig\Les03>
