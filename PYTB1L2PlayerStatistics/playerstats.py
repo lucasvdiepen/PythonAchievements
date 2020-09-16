@@ -10,7 +10,7 @@ class Gun(Enum):
     Sniper = "Sniper"
 
 def newPlayer(name, age, strength, gun, ammo, alive, level, kills, lives, money):
-    newPlayer = {
+    Player = {
         "Name": name,
         "Age": age,
         "Strength": strength,
@@ -22,7 +22,7 @@ def newPlayer(name, age, strength, gun, ammo, alive, level, kills, lives, money)
         "Lives": lives,
         "Money": money
     }
-    return newPlayer
+    return Player
 
 player = newPlayer("Lucas", 16, 100, Gun.Sniper, 40, True, 99, 18, 3, 66.55)
 
