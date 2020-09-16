@@ -91,7 +91,7 @@ def Game(gameHearts, gameDownTime, currentHighscore):
         millis = time.ticks_ms()
         if(millis - dropDownTime) > downTime:
             display.set_pixel(prevx, prevy, 0)
-            display.set_pixel(rndLine, ballY, 9);
+            display.set_pixel(rndLine, ballY, 9)
             prevx = rndLine
             prevy = ballY
             ballY += 1
@@ -109,9 +109,9 @@ def Game(gameHearts, gameDownTime, currentHighscore):
                         #game over
                         
                         #check if this score is higher than highscore
-                        if(points > currentHighscore):
+                        if(points > int(currentHighscore)):
                             #new highscore
-                            with open("highscore", "w") as highscoreFile:
+                            with open("highscore.txt", "w") as highscoreFile:
                                 scoreToSave = str(points)
                                 highscoreFile.write(scoreToSave)
                                 
@@ -152,10 +152,22 @@ while True:
             arrowEnabled = True
             
     if button_a.is_pressed():
+        try:
+            with open("highscore.txt", "r") as file:
+                highscore = file.read()
+        except OSError:
+            print("OSERROR")
+            highscore = 0
         display.clear()
         Game(startingHearts, startingDownTime, highscore)
         
     if button_b.is_pressed():
+        try:
+            with open("highscore.txt", "r") as file:
+                highscore = file.read()
+        except OSError:
+            print("OSERROR")
+            highscore = 0
         display.clear()
         highscoretxt = "Highscore: " + str(highscore)
         display.scroll(highscoretxt)
