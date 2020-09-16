@@ -19,7 +19,7 @@ def ShowTextAnimation(text):
 
 def AskQuestion(question, options):
     if len(options) > len(chars):
-         return
+        return
     rndChoices = list(range(0, len(options)))
     correctAnswerIndex = -1
 
