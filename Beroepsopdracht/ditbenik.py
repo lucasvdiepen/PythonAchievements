@@ -8,7 +8,8 @@ testval = chr(2)
 dialogCharDelay = 0.07
 chars = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
-print(chars.index("C"))
+correctResponses = ["Goed!", "Klopt!", "Correct!", "Goed gegokt"]
+incorrectResponses = ["Fout", "Helaas", "Verkeerd gegokt"]
 
 def ShowTextAnimation(text):
     for char in text:
@@ -35,18 +36,22 @@ def AskQuestion(question, options):
     
     print("")
     while True:
-        answer = input("Antwoord: ")
+        answer = input("> ")
         if(len(answer) == 1 and answer.isalpha()):
             if(len(options) >= (chars.index(answer.upper()) + 1)):
                 if answer.upper() == chars[correctAnswerIndex]:
-                    print("Goed")
+                    print(random.choice(correctResponses))
                 else:
-                    print("Fout")
+                    print(random.choice(incorrectResponses))
+                
+                time.sleep(1)
 
                 break
 
             else: print("Kies de letter van een van de antwoorden \n\n")
         else: print("Kies de letter van een van de antwoorden \n\n")
+    
+    print("\n")
 
 
 while True:
@@ -57,7 +62,9 @@ while True:
     ShowTextAnimation("Hello " + name)
     print("De datum en tijd is " + str(datetime.datetime.now()) + "\n\n")
     #Het laatste antwoord moet altijd het goede antwoord zijn
-    AskQuestion("test vraag?", ["antwoord1", "antwoord2", "antwoord3"])
+    AskQuestion("Waar woon ik?", ["Alkmaar", "Amsterdam", "Heerhugowaard"])
+    AskQuestion("Welk niveau heb ik vorig jaar gedaan", ["havo", "vwo", "vmbo-t"])
+    AskQuestion("Hoe oud ben ik?", ["17", "15", "16"])
     while True:
         againInput = input(name + " wil jij dit programma nog een keer doen? Type Y/N: ")
         if againInput.upper() == "Y":
