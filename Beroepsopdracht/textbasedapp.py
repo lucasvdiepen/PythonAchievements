@@ -31,7 +31,8 @@ commands = {
     "w,west": Command("GoDirection", "w", 0, None),
     "e,east": Command("GoDirection", "e", 0, None),
     "s,south": Command("GoDirection", "s", 0, None),
-    "pick,pickup": Command("Pick", None, -1, "What do you want to pick up?")
+    "pick,pickup": Command("Pick", None, -1, "What do you want to pick up?"),
+    "walk,run": Command("Walk", None, 1, "Which direction do you want to go?")
 }
 
 inventory = []
@@ -55,7 +56,18 @@ def GoDirection(args):
             currentRoom = newRoom.name
             print(newRoom.name)
             print(newRoom.description)
-        
+
+def Walk(args):
+    if(len(args) <= 0):
+        AskFollowUp("walk")
+    else:
+        arg = args[0].upper()
+        allowedList = ["N", "NORTH", "W", "WEST", "E", "EAST", "S", "SOUTH"]
+        if(arg in allowedList):
+            GoDirection([arg.lower()[0]])
+        else:
+            print("Don't know what you mean")
+
 
 def Pick(args):
     if(len(args) <= 0):
@@ -134,8 +146,7 @@ def AskCommand():
                 if(command.expectedArgs == argsCount):
                     RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs, command.followUp))
                 elif(argsCount < command.expectedArgs and argsCount >= 0):
-                    print("Don't know what you mean yet. Follow up question should happen here")
-                    AskFollowUp(command)
+                    AskFollowUp(inputInList[0])
                 elif(argsCount > command.expectedArgs):
                     print("Don't know what you mean")
 
