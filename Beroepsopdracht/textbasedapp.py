@@ -5,44 +5,103 @@ class Item:
         self.tags = tags
 
 class Room:
-    def __init__(self, title, description, items, roomDirections):
-        self.title = title
+    def __init__(self, name, description, items, roomDirections):
+        self.name = name
         self.description = description
         self.items = items
         self.roomDirections = roomDirections #make this a dictionary
 
 class Command:
-    def __init__(self, function, args, expectedArgs):
+    def __init__(self, function, args, expectedArgs, followUp):
         self.function = function
         self.args = args
         self.expectedArgs = expectedArgs
+        self.followUp = followUp
+
+#Setup process
 
 rooms = []
+rooms.append(Room("Test Room", "This is a wonderfull test room", [Item("Magic wand", True, ["WAND"])], {"n": "Other Room"}))#test room
+rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", True, ["ROCK", "STONES"])], {"s": "Test Room"}))#test room
+
+currentRoom = "Test Room"
+
 commands = {
-    "n,north": Command("GoDirection", "n", 0),
-    "w,west": Command("GoDirection", "w", 0),
-    "e,east": Command("GoDirection", "e", 0),
-    "s,south": Command("GoDirection", "s", 0)
+    "n,north": Command("GoDirection", "n", 0, None),
+    "w,west": Command("GoDirection", "w", 0, None),
+    "e,east": Command("GoDirection", "e", 0, None),
+    "s,south": Command("GoDirection", "s", 0, None),
+    "pick,pickup": Command("Pick", None, -1, "What do you want to pick up?")
 }
 
-def FindFunction(s):
-    end = s.index("(")
-    return s[0:end]
+inventory = []
 
-def FindArgs(s):
-    start = s.index("(") + 1
-    end = s.index(")")
-    return s[start:end].split(",")
+#Command Functions
 
 def GoDirection(args):
-    print(args[0])
+    global currentRoom
+    roomDetails = GetRoom(currentRoom)
+    roomToGo = ""
+    if(args[0] in roomDetails.roomDirections):
+        roomToGo = roomDetails.roomDirections[args[0]]
+    if(roomToGo is None or roomToGo == ""):
+        print("You can't go there")
+    else:
+        #go to new room
+        newRoom = GetRoom(roomToGo)
+        if(newRoom is None):
+            print("[Error: Room doesn't exists]")
+        else:
+            currentRoom = newRoom.name
+            print(newRoom.name)
+            print(newRoom.description)
+        
+
+def Pick(args):
+    if(len(args) <= 0):
+        #Follow up question should happen here
+        AskFollowUp("pick")
+    else:
+        item = GetItem(args)
+        if (item is None):
+            print("Couldn't find that item")
+        else:
+            if(item.pickable):
+                PickUpItem(item.name)
+            else:
+                print("You can't pick this item")
+
+def GetItem(args):
+    roomDetails = GetRoom(currentRoom)
+    #Check full name
+    fullArgs = " ".join([str(arg) for arg in args])
+    for item in roomDetails.items:
+        if(item.name.upper() == fullArgs.upper()):
+            #found item
+            return item
+    
+    #Check tags
+    for item in roomDetails.items:
+        for arg in args:
+            if(arg.upper() in item.tags):
+                return item
+
+def PickUpItem(name):
+    for roomDetails in rooms:
+        if(roomDetails.name == currentRoom):
+            for itemIndex in range(len(roomDetails.items)):
+                if(roomDetails.items[itemIndex].name == name):
+                    inventory.append(roomDetails.items[itemIndex])
+                    print("You picked up: " + roomDetails.items[itemIndex].name)
+                    roomDetails.items.pop(itemIndex)
+
+def GetRoom(name):
+    for room in rooms:
+        if(name == room.name):
+            return room
 
 def RunCommand(command):
-    #globals()[FindFunction(func)](FindArgs(func))
     globals()[command.function](command.args)
-
-
-#RunCommand("GoDirection(teststring,moreteststrings,plusthis)")
 
 def GetCommand(playerCommand):
     for key in commands:
@@ -69,24 +128,30 @@ def AskCommand():
                 else:
                     RunCommand(command)
             elif(command.expectedArgs == -1):
-                    pass
                     #no limit for arguments, so send all arguments
-                    RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs))
+                    RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs, command.followUp))
             else:
                 if(command.expectedArgs == argsCount):
-                    RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs))
+                    RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs, command.followUp))
                 elif(argsCount < command.expectedArgs and argsCount >= 0):
                     print("Don't know what you mean yet. Follow up question should happen here")
+                    AskFollowUp(command)
                 elif(argsCount > command.expectedArgs):
                     print("Don't know what you mean")
-                
-                    
-    
-        
-        
 
-#Setup process
-
+def AskFollowUp(basecommand):
+    commandDetails = GetCommand(basecommand)
+    print(commandDetails.followUp)
+    playerInput = input("> ")
+    inputInList = playerInput.split(" ")
+    argsCount = len(inputInList)
+    if(commandDetails.expectedArgs == -1):
+        RunCommand(Command(commandDetails.function, inputInList, commandDetails.expectedArgs, commandDetails.followUp))
+    else:
+        if(commandDetails.expectedArgs == argsCount):
+            RunCommand(Command(commandDetails.function, inputInList, commandDetails.expectedArgs, commandDetails.followUp))
+        else:
+            print("Don't know what you mean")
 
 #Command loop
 while True:
