@@ -1,6 +1,7 @@
 class Item:
-    def __init__(self, name, pickable, tags):
+    def __init__(self, name, description, pickable, tags):
         self.name = name
+        self.description = description
         self.pickable = pickable
         self.tags = tags
 
@@ -21,8 +22,8 @@ class Command:
 #Setup process
 
 rooms = []
-rooms.append(Room("Test Room", "This is a wonderfull test room", [Item("Magic wand", True, ["WAND"])], {"n": "Other Room"}))#test room
-rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", True, ["ROCK", "STONES"])], {"s": "Test Room"}))#test room
+rooms.append(Room("Test Room", "This is a wonderfull test room", [Item("Magic wand", "This is a good looking wand.", True, ["WAND"])], {"n": "Other Room"}))#test room
+rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", "This is a just normal stone. It might be usefull against enemies.", True, ["ROCK", "STONES"])], {"s": "Test Room"}))#test room
 
 currentRoom = "Test Room"
 
@@ -32,12 +33,30 @@ commands = {
     "e,east": Command("GoDirection", "e", 0, None),
     "s,south": Command("GoDirection", "s", 0, None),
     "pick,pickup": Command("Pick", None, -1, "What do you want to pick up?"),
-    "walk,run": Command("Walk", None, 1, "Which direction do you want to go?")
+    "walk,run": Command("Walk", None, 1, "Which direction do you want to go?"),
+    "x,examine": Command("Examine", None, -1, "What do you want to examine?")
 }
 
 inventory = []
 
 #Command Functions
+
+def FollowUp(args, command):
+    if(len(args) <= 0):
+        AskFollowUp(command)
+        return False
+    
+    return True
+
+def Examine(args):
+    if(len(args) <= 0):
+        AskFollowUp("examine")
+    else:
+        item = GetItem(args)
+        if(item is None):
+            pass
+        else:
+            print(item.description)
 
 def GoDirection(args):
     global currentRoom
@@ -76,7 +95,7 @@ def Pick(args):
     else:
         item = GetItem(args)
         if (item is None):
-            print("Couldn't find that item")
+            pass
         else:
             if(item.pickable):
                 PickUpItem(item.name)
@@ -89,14 +108,17 @@ def GetItem(args):
     fullArgs = " ".join([str(arg) for arg in args])
     for item in roomDetails.items:
         if(item.name.upper() == fullArgs.upper()):
-            #found item
+            #found item in full name
             return item
     
     #Check tags
     for item in roomDetails.items:
         for arg in args:
             if(arg.upper() in item.tags):
+                #found item in tag
                 return item
+
+    print("Couldn't find that item")
 
 def PickUpItem(name):
     for roomDetails in rooms:
