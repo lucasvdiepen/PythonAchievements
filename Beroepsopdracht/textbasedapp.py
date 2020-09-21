@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 
 class SearchIn(Enum):
     Room = 0
@@ -50,7 +51,8 @@ commands = {
     "l,look": Command("Look", None, 0, None),
     "i,inventory": Command("Inventory", None, 0, None),
     "use": Command("Use", None, -1, "What do you want to use"),
-    "drop": Command("Drop", None, -1, "What do you want to drop?")
+    "drop": Command("Drop", None, -1, "What do you want to drop?"),
+    "exit,quit": Command("Exit", None, 0, None)
 }
 
 inventory = []
@@ -67,6 +69,17 @@ def FollowUp(args, command):
 def Use(args):
     if(FollowUp(args, "use")):
         print("This command does not work yet")
+
+def Exit(args):
+    print("Do you want to quit? Y/N")
+    while True:
+        playerInput = input("> ")
+        if(playerInput.upper() == "Y" or playerInput.upper() == "YES"):
+            exit()
+        elif(playerInput.upper() == "N" or playerInput.upper() == "NO"):
+            break
+        else:
+            print("Choose between Y or N \n")
 
 def Drop(args):
     if(FollowUp(args, "drop")):
