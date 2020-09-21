@@ -21,6 +21,9 @@ class Command:
 
 #Setup process
 
+BOLD = '\033[1m'
+END = '\033[0m'
+
 rooms = []
 rooms.append(Room("Test Room", "This is a wonderfull test room", [Item("Magic wand", "This is a good looking wand.", True, ["WAND"])], {"n": "Other Room"}))#test room
 rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", "This is a just normal stone. It might be usefull against enemies.", True, ["ROCK", "STONES"])], {"s": "Test Room"}))#test room
@@ -32,9 +35,13 @@ commands = {
     "w,west": Command("GoDirection", "w", 0, None),
     "e,east": Command("GoDirection", "e", 0, None),
     "s,south": Command("GoDirection", "s", 0, None),
+    "up": Command("GoDirection", "u", 0, None),
+    "down": Command("GoDirection", "d", 0, None),
     "pick,pickup": Command("Pick", None, -1, "What do you want to pick up?"),
-    "walk,run": Command("Walk", None, 1, "Which direction do you want to go?"),
-    "x,examine": Command("Examine", None, -1, "What do you want to examine?")
+    "walk,run,go": Command("Walk", None, 1, "Which direction do you want to go?"),
+    "x,examine": Command("Examine", None, -1, "What do you want to examine?"),
+    "l,look": Command("Look", None, 0, None),
+    "i,inventory": Command("Inventory", None, 0, None)
 }
 
 inventory = []
@@ -48,10 +55,24 @@ def FollowUp(args, command):
     
     return True
 
-def Examine(args):
-    if(len(args) <= 0):
-        AskFollowUp("examine")
+def Inventory(args):
+    if(len(inventory) > 2):
+        inv = inventory[0:(len(inventory) - 2)]
+        fullInventory = ", ".join([str(itemName) for itemName in inv])
+        fullInventory += " and " + inventory[len(inventory) - 1]
     else:
+        fullInventory = " and ".join([str(itemName) for itemName in inventory])
+
+    print(fullInventory)
+
+
+def Look(args):
+    roomDetails = GetRoom(currentRoom)
+    print(BOLD + roomDetails.name + END)
+    print(roomDetails.description)
+
+def Examine(args):
+    if(FollowUp(args, "examine")):
         item = GetItem(args)
         if(item is None):
             pass
@@ -73,15 +94,13 @@ def GoDirection(args):
             print("[Error: Room doesn't exists]")
         else:
             currentRoom = newRoom.name
-            print(newRoom.name)
+            print(BOLD + newRoom.name + END)
             print(newRoom.description)
 
 def Walk(args):
-    if(len(args) <= 0):
-        AskFollowUp("walk")
-    else:
+    if(FollowUp(args, "walk")):
         arg = args[0].upper()
-        allowedList = ["N", "NORTH", "W", "WEST", "E", "EAST", "S", "SOUTH"]
+        allowedList = ["N", "NORTH", "W", "WEST", "E", "EAST", "S", "SOUTH", "UP", "DOWN"]
         if(arg in allowedList):
             GoDirection([arg.lower()[0]])
         else:
@@ -89,10 +108,7 @@ def Walk(args):
 
 
 def Pick(args):
-    if(len(args) <= 0):
-        #Follow up question should happen here
-        AskFollowUp("pick")
-    else:
+    if(FollowUp(args, "pick")):
         item = GetItem(args)
         if (item is None):
             pass
