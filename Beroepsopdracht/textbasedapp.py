@@ -1,3 +1,10 @@
+from enum import Enum
+
+class SearchIn(Enum):
+    Room = 0
+    Inventory = 1
+    RoomAndInventory = 2
+
 class Item:
     def __init__(self, name, description, pickable, tags):
         self.name = name
@@ -56,12 +63,13 @@ def FollowUp(args, command):
     return True
 
 def Inventory(args):
+    fullInventory = "You have: "
     if(len(inventory) > 2):
         inv = inventory[0:(len(inventory) - 2)]
-        fullInventory = ", ".join([str(itemName) for itemName in inv])
-        fullInventory += " and " + inventory[len(inventory) - 1]
+        fullInventory += ", ".join([str(itemName.name) for itemName in inv])
+        fullInventory += " and " + inventory[len(inventory) - 1].name
     else:
-        fullInventory = " and ".join([str(itemName) for itemName in inventory])
+        fullInventory  += " and ".join([str(itemName.name) for itemName in inventory])
 
     print(fullInventory)
 
@@ -73,7 +81,7 @@ def Look(args):
 
 def Examine(args):
     if(FollowUp(args, "examine")):
-        item = GetItem(args)
+        item = GetItem(args, SearchIn.RoomAndInventory)
         if(item is None):
             pass
         else:
@@ -109,7 +117,7 @@ def Walk(args):
 
 def Pick(args):
     if(FollowUp(args, "pick")):
-        item = GetItem(args)
+        item = GetItem(args, SearchIn.Room)
         if (item is None):
             pass
         else:
@@ -118,21 +126,29 @@ def Pick(args):
             else:
                 print("You can't pick this item")
 
-def GetItem(args):
-    roomDetails = GetRoom(currentRoom)
-    #Check full name
-    fullArgs = " ".join([str(arg) for arg in args])
-    for item in roomDetails.items:
-        if(item.name.upper() == fullArgs.upper()):
-            #found item in full name
-            return item
+def GetItem(args, searchIn):
+    itemList = []
+    if(searchIn == SearchIn.Room or searchIn == SearchIn.RoomAndInventory):
+        roomDetails = GetRoom(currentRoom)
+        itemList.append(roomDetails.items)
     
-    #Check tags
-    for item in roomDetails.items:
-        for arg in args:
-            if(arg.upper() in item.tags):
-                #found item in tag
+    if(searchIn == SearchIn.Inventory or searchIn == searchIn.RoomAndInventory):
+        itemList.append(inventory)
+    
+    for items in itemList:
+        #Check full name
+        fullArgs = " ".join([str(arg) for arg in args])
+        for item in items:
+            if(item.name.upper() == fullArgs.upper()):
+                #found item in full name
                 return item
+        
+        #Check tags
+        for item in items:
+            for arg in args:
+                if(arg.upper() in item.tags):
+                    #found item in tag
+                    return item
 
     print("Couldn't find that item")
 
