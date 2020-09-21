@@ -48,7 +48,9 @@ commands = {
     "walk,run,go": Command("Walk", None, 1, "Which direction do you want to go?"),
     "x,examine": Command("Examine", None, -1, "What do you want to examine?"),
     "l,look": Command("Look", None, 0, None),
-    "i,inventory": Command("Inventory", None, 0, None)
+    "i,inventory": Command("Inventory", None, 0, None),
+    "use": Command("Use", None, -1, "What do you want to use"),
+    "drop": Command("Drop", None, -1, "What do you want to drop?")
 }
 
 inventory = []
@@ -61,6 +63,27 @@ def FollowUp(args, command):
         return False
     
     return True
+
+def Use(args):
+    if(FollowUp(args, "use")):
+        print("This command does not work yet")
+
+def Drop(args):
+    if(FollowUp(args, "drop")):
+        item = GetItem(args, SearchIn.Inventory)
+        if(item is None):
+            pass
+        else:
+            DropItem(item.name)
+
+def DropItem(name):
+    for itemIndex in range(len(inventory)):
+        if(inventory[itemIndex].name == name):
+            for roomDetails in rooms:
+                if(roomDetails.name == currentRoom):
+                    roomDetails.items.append(inventory[itemIndex])
+            print("You dropped: " + inventory[itemIndex].name)
+            inventory.pop(itemIndex)
 
 def Inventory(args):
     fullInventory = "You have: "
