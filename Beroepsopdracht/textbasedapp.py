@@ -1,5 +1,9 @@
 from enum import Enum
 import os
+try:
+    from playsound import playsound
+except ModuleNotFoundError:
+    print("Playsound module not found")
 
 class SearchIn(Enum):
     Room = 0
@@ -14,11 +18,20 @@ class Item:
         self.tags = tags
 
 class Room:
-    def __init__(self, name, description, items, roomDirections):
+    def __init__(self, name, description, items, npc, roomDirections):
         self.name = name
         self.description = description
         self.items = items
-        self.roomDirections = roomDirections #make this a dictionary
+        self.npc = npc
+        self.roomDirections = roomDirections
+
+class NPC:
+    def __init__(self, name, description, tags, wantItems, text):
+        self.name = name
+        self.description = description
+        self.tags = tags
+        self.wantItems = wantItems
+        self.text = text
 
 class Command:
     def __init__(self, function, args, expectedArgs, followUp):
@@ -37,9 +50,13 @@ class CommandResponse:
 BOLD = '\033[1m'
 END = '\033[0m'
 
+itemListTestRoom = [Item("Magic wand", "This is a good looking wand.", True, ["wand"])]
+npcListTestRoom = [NPC("Guard", "Looks like a normal guard", [], {"Passport": "GuardGotPassport"}, "You need to give me your passport")]
+
+
 rooms = []
-rooms.append(Room("Test Room", "This is a wonderfull test room", [Item("Magic wand", "This is a good looking wand.", True, ["WAND"])], {"n": "Other Room"}))#test room
-rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", "This is a just normal stone. It might be usefull against enemies.", True, ["ROCK", "STONES"])], {"s": "Test Room"}))#test room
+rooms.append(Room("Test Room", "This is a wonderfull test room", itemListTestRoom, npcListTestRoom, {"n": "Other Room"}))#test room
+rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", "This is a just normal stone. It might be usefull against enemies.", True, ["ROCK", "STONES"])], [],  {"s": "Test Room"}))#test room
 
 currentRoom = "Test Room"
 objective = "There is no objective yet"
@@ -60,10 +77,15 @@ commands = {
     "drop": Command("Drop", None, -1, "What do you want to drop?"),
     "exit,quit": Command("Exit", None, 0, None),
     "give": Command("Give", None, -1, "What do you want to give?"),
-    "objective": Command("Objective", None, 0, None)
+    "objective,obj": Command("Objective", None, 0, None)
 }
 
 inventory = []
+
+# NPC Functions
+
+def GuardGotPassport():
+    print("Thank you. This passport looks normal. You can pass")
 
 #Command Functions
 
@@ -202,11 +224,26 @@ def GetItem(args, searchIn):
         #Check tags
         for item in items:
             for arg in args:
-                if(arg.upper() in item.tags):
+                if(arg.lower() in item.tags):
                     #found item in tag
                     return item
 
     print("Couldn't find that item")
+
+def GetNPC(args):
+    roomDetails = GetRoom(currentRoom)
+
+    fullArgs = " ".join([str(arg) for arg in args])
+    for npc in roomDetails.npc:
+        if(npc.name.upper() == fullArgs.upper()):
+            return npc
+
+    for npc in roomDetails.npc:
+        for arg in args:
+            if(arg.lower() in npc.tags):
+                return npc
+
+    print("Couldn't find that person")
 
 def PickUpItem(name):
     for roomDetails in rooms:
