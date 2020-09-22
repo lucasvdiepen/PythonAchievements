@@ -27,6 +27,11 @@ class Command:
         self.expectedArgs = expectedArgs
         self.followUp = followUp
 
+class CommandResponse:
+    def __init__(self, command, baseCommand):
+        self.command = command
+        self.baseCommand = baseCommand
+
 #Setup process
 
 BOLD = '\033[1m'
@@ -37,22 +42,25 @@ rooms.append(Room("Test Room", "This is a wonderfull test room", [Item("Magic wa
 rooms.append(Room("Other Room", "This is the other room with magical stones", [Item("Stone", "This is a just normal stone. It might be usefull against enemies.", True, ["ROCK", "STONES"])], {"s": "Test Room"}))#test room
 
 currentRoom = "Test Room"
+objective = "There is no objective yet"
 
 commands = {
-    "n,north": Command("GoDirection", "n", 0, None),
-    "w,west": Command("GoDirection", "w", 0, None),
-    "e,east": Command("GoDirection", "e", 0, None),
-    "s,south": Command("GoDirection", "s", 0, None),
-    "up": Command("GoDirection", "u", 0, None),
-    "down": Command("GoDirection", "d", 0, None),
-    "pick,pickup": Command("Pick", None, -1, "What do you want to pick up?"),
-    "walk,run,go": Command("Walk", None, 1, "Which direction do you want to go?"),
+    "n,north": Command("GoDirection", "n", 1, None),
+    "w,west": Command("GoDirection", "w", 1, None),
+    "e,east": Command("GoDirection", "e", 1, None),
+    "s,south": Command("GoDirection", "s", 1, None),
+    "up": Command("GoDirection", "u", 1, None),
+    "down": Command("GoDirection", "d", 1, None),
+    "pick up,pick,pickup": Command("Pick", None, -1, "What do you want to pick up?"),
+    "walk to,run to,go to,walk,run,go": Command("Walk", None, 1, "Which direction do you want to go?"),
     "x,examine": Command("Examine", None, -1, "What do you want to examine?"),
-    "l,look": Command("Look", None, 0, None),
+    "look around,l,look": Command("Look", None, 0, None),
     "i,inventory": Command("Inventory", None, 0, None),
     "use": Command("Use", None, -1, "What do you want to use"),
     "drop": Command("Drop", None, -1, "What do you want to drop?"),
-    "exit,quit": Command("Exit", None, 0, None)
+    "exit,quit": Command("Exit", None, 0, None),
+    "give": Command("Give", None, -1, "What do you want to give?"),
+    "objective": Command("Objective", None, 0, None)
 }
 
 inventory = []
@@ -65,6 +73,18 @@ def FollowUp(args, command):
         return False
     
     return True
+
+def Objective(args):
+    print("Objective:")
+    print(objective)
+
+def Give(args):
+    if(FollowUp(args, "give")):
+        item = GetItem(args, SearchIn.Inventory)
+        if(item is None):
+            pass
+        else:
+            pass
 
 def Use(args):
     if(FollowUp(args, "use")):
@@ -209,9 +229,33 @@ def GetCommand(playerCommand):
     for key in commands:
         commandList = key.split(",")
         for command in commandList:
-            if(command.upper() == playerCommand.upper()):
-                #command found
-                return commands[key]
+            commandParts = command.split(" ")
+            if(len(playerCommand) >= len(commandParts)):
+                commandRecognized = True
+                for i in range(len(commandParts)):
+                    if(commandParts[i].upper() == playerCommand[i].upper()):
+                        pass
+                    else:
+                        commandRecognized = False
+                        break
+                
+                if(commandRecognized):
+                    for j in range(len(commandParts)):
+                        playerCommand.pop(0)
+                    
+                    fullCommand = commands[key]
+                    argsToGive = []
+                    if(fullCommand.args is None):
+                        pass
+                    else:
+                        for arg in fullCommand.args:
+                            argsToGive.append(arg)
+
+                    for playerArg in playerCommand:
+                        argsToGive.append(playerArg)
+
+                    return CommandResponse(Command(fullCommand.function, argsToGive, fullCommand.expectedArgs, fullCommand.followUp), " ".join([str(part) for part in commandParts]))
+            
 
 def AskCommand():
     playerInput = input("> ")
@@ -219,40 +263,55 @@ def AskCommand():
         print("No input")
     else:
         inputInList = playerInput.split(" ")
-        command = GetCommand(inputInList[0])
-        if(command is None):
+        commandResponse = GetCommand(inputInList)
+        if(commandResponse is None):
             print("Command not found")
         else:
-            argsCount = len(inputInList) - 1
+            command = commandResponse.command
+            argsCount = len(command.args)
             if(command.expectedArgs == 0):
                 if(argsCount > 0):
                     print("Don't know what you mean")
                 else:
                     RunCommand(command)
             elif(command.expectedArgs == -1):
-                    #no limit for arguments, so send all arguments
-                    RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs, command.followUp))
+                #no limit for arguments, so send all arguments
+                RunCommand(command)
             else:
                 if(command.expectedArgs == argsCount):
-                    RunCommand(Command(command.function, inputInList[1:len(inputInList)], command.expectedArgs, command.followUp))
+                    RunCommand(command)
                 elif(argsCount < command.expectedArgs and argsCount >= 0):
-                    AskFollowUp(inputInList[0])
+                    AskFollowUp(commandResponse.baseCommand)
                 elif(argsCount > command.expectedArgs):
                     print("Don't know what you mean")
 
 def AskFollowUp(basecommand):
-    commandDetails = GetCommand(basecommand)
+    baseCommandInList = basecommand.split(" ")
+    commandDetails = GetCommand(baseCommandInList).command
     print(commandDetails.followUp)
     playerInput = input("> ")
-    inputInList = playerInput.split(" ")
-    argsCount = len(inputInList)
-    if(commandDetails.expectedArgs == -1):
-        RunCommand(Command(commandDetails.function, inputInList, commandDetails.expectedArgs, commandDetails.followUp))
+    if(len(playerInput) <= 0):
+        print("No input")
     else:
-        if(commandDetails.expectedArgs == argsCount):
-            RunCommand(Command(commandDetails.function, inputInList, commandDetails.expectedArgs, commandDetails.followUp))
+        inputInList = playerInput.split(" ")
+        argsCount = len(inputInList)
+        argsToGive = []
+        if(commandDetails.args is None):
+            pass
         else:
-            print("Don't know what you mean")
+            for arg in commandDetails.args:
+                argsToGive.append(arg)
+
+        for playerArg in inputInList:
+            argsToGive.append(playerArg)
+
+        if(commandDetails.expectedArgs == -1):
+            RunCommand(Command(commandDetails.function, argsToGive, commandDetails.expectedArgs, commandDetails.followUp))
+        else:
+            if(commandDetails.expectedArgs == argsCount):
+                RunCommand(Command(commandDetails.function, argsToGive, commandDetails.expectedArgs, commandDetails.followUp))
+            else:
+                print("Don't know what you mean")
 
 #Command loop
 while True:
