@@ -26,11 +26,12 @@ class Room:
         self.roomDirections = roomDirections
 
 class NPC:
-    def __init__(self, name, description, tags, wantItems, text):
+    def __init__(self, name, description, tags, wantItems, talkFunction, text):
         self.name = name
         self.description = description
         self.tags = tags
         self.wantItems = wantItems
+        self.talkFunction = talkFunction
         self.text = text
 
 class Command:
@@ -51,7 +52,7 @@ BOLD = '\033[1m'
 END = '\033[0m'
 
 itemListTestRoom = [Item("Magic wand", "This is a good looking wand.", True, ["wand"])]
-npcListTestRoom = [NPC("Guard", "Looks like a normal guard", [], {"Passport": "GuardGotPassport"}, "You need to give me your passport")]
+npcListTestRoom = [NPC("Guard", "Looks like a normal guard", [], {"Passport": "GuardGotPassport"}, "GuardTalk", "You need to give me your passport")]
 
 
 rooms = []
@@ -81,6 +82,11 @@ commands = {
 }
 
 inventory = []
+
+# TalkFunction
+
+def GuardTalk():
+    pass
 
 # NPC Functions
 
