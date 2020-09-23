@@ -7,7 +7,7 @@ try:
 except ModuleNotFoundError:
     soundCantPlay = True
 
-for i in range(1000, 0, -1):
+for i in range(1000, -1, -1):
     print(i)
     time.sleep(0.01)
 
