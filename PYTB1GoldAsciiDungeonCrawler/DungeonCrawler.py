@@ -63,6 +63,7 @@ class Enemy():
     walkDelay = 500 # is in miliseconds
     lastPathChange = 0 #ms time
     canMove = True
+    Dead = False
     
     def MovePath(self):
         newPosition = Position(self.position.x + self.path[self.pathCount].x, self.position.y + self.path[self.pathCount].y)
@@ -89,7 +90,8 @@ class Enemy():
         self.health -= damage
         if(self.health <= 0):
             #enemy dead
-            game.RemoveEnemy(self.position)
+            #game.RemoveEnemy(self.position)
+            self.Dead = True
 
 class Map():
     xLength = 17
@@ -186,8 +188,12 @@ def MoveEnemies():
     if(timeNow > (game.cantMoveStartTime + EnemyAttackDelay)):
         for enemy in game.enemies:
             if(not enemy.canMove):
-                game.map.ChangeChar(enemy.position, "x")
                 enemy.canMove = True
+                if(enemy.Dead):
+                    game.map.ChangeChar(enemy.position, " ")
+                    game.RemoveEnemy(enemy.position)
+                else:
+                    game.map.ChangeChar(enemy.position, "x")
                 UpdateScreen = True
 
     if(timeNow > (game.cantMoveStartTime + AttackDelay)):
