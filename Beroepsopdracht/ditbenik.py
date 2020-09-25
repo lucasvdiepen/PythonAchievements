@@ -19,12 +19,17 @@ class Question():
 
 questions = []
 
+#laatste optie moet het goede antwoord zijn
 #questions.append(Question("", "", {"": "", "": "", "": ""}))
 questions.append(Question("Woon", "Waar woon ik?", {"Alkmaar": "Leeftijd", "Amsterdam": "Leeftijd", "Heerhugowaard": "Leeftijd"}))
 questions.append(Question("Leeftijd", "Hoe oud ben ik?", {"17": "Niveau", "15": "Niveau", "16": "Niveau"}))
 questions.append(Question("Niveau", "Welk niveau heb ik vorig jaar gedaan", {"havo": "Snack", "vwo": "Snack", "vmbo-t": "Snack"}))
-questions.append(Question("Snack", "Wat is mijn lievelings snack?", {"Frikandel": "", "Kaassouflé": "", "Kroket": "Groente"}))
-questions.append(Question("Groente", "Oke dat klopt. \n\nWat is dan mijn lievelings groente?", {"Broccoli": "", "Wortels": "", "Bloemkool": ""}))
+questions.append(Question("Snack", "Wat is mijn lievelings snack?", {"Frikandel": "Geboorte", "Kaassouflé": "Geboorte", "Kroket": "Groente"}))
+questions.append(Question("Groente", "Oke dat klopt. \n\nWat is dan mijn lievelings groente?", {"Broccoli": "Ogen", "Wortels": "Ogen", "Bloemkool": "Ogen"}))
+questions.append(Question("Geboorte", "In welke maand ben ik geboren", {"December": "Handig", "Augustus": "Handig", "Januari": "Handig"}))
+questions.append(Question("Handig", "Schrijf ik met mijn linkerhand of rechterhand?", {"Geen idee": "Ogen", "Linkerhand": "Ogen", "Rechterhand": "Ogen"}))
+questions.append(Question("Ogen", "Welke kleur ogen heb ik?", {"Blauw": "Broertjes", "Groen": "Broertjes", "Bruin": "Broertjes"}))
+questions.append(Question("Broertjes", "Hoeveel broertjes heb ik?", {"1": "", "3": "", "2": ""}))
 
 def ShowTextAnimation(text):
     for char in text:
@@ -46,7 +51,7 @@ def AskQuestions():
         if(nextQuestion == "" or nextQuestion is None):
             break
 
-    print("Klaar.")
+    print("Dit waren de vragen.")
 
 
 def AskQuestion(question, options):
