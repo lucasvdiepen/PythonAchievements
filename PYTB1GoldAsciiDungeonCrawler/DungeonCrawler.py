@@ -205,7 +205,7 @@ class Map():
 
     def Setup(self):
         self.xLength = 28
-        self.yLength = 10
+        self.yLength = 25
         self.map = [
         "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
@@ -216,15 +216,22 @@ class Map():
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", "@", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#",
+        "#", "#", "#", "#", "#", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "#", "#", "#",
+        " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
+        " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
+        " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
+        " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
+        " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
+        "#", "#", "#", "#", "#", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "#", "#", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#"
-        "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"
     ]
 
     def __init__(self, player, enemies, healthItems):
@@ -304,6 +311,7 @@ class Game():
                 break
 
     def RemoveHealthItem(self, position):
+        global UpdateScreen
         for i in range(len(self.healthItems)):
             if(self.healthItems[i].position.x == position.x and self.healthItems[i].position.y == position.y):
                 self.map.ChangeChar(self.healthItems[i].position, " ")
@@ -363,25 +371,34 @@ def on_press(key):
     global UpdateScreen
     global MoveKeyDown
     global userInput
+    global UpdateScreenEnd
+    global UpdateScreenStart
     #print('{0} pressed'.format(key))
 
     if(key == Key.enter):
         RunCommand(userInput)
         userInput = ""
         UpdateScreen = True
+        UpdateScreenEnd = True
+        UpdateScreenStart = True
     elif(key == Key.backspace):
         userInput = userInput[:-1]
         UpdateScreen = True
+        UpdateScreenEnd = True
+        UpdateScreenStart = True
     elif(key == Key.space):
         if(game.Started):
             userInput += " "
-            UpdateScreen = True
         else:
             game.Reset()
-            game.Started = True 
+            game.Started = True
+            
+        UpdateScreen = True
     try:
         userInput += str(key.char)
         UpdateScreen = True
+        UpdateScreenEnd = True
+        UpdateScreenStart = True
     except Exception:
         pass
 
@@ -419,6 +436,8 @@ def on_release(key):
 game = Game()
 
 UpdateScreen = False
+UpdateScreenEnd = False
+UpdateScreenStart = False
 
 listener = Listener(
     on_press=on_press,
@@ -432,12 +451,12 @@ onoff = False
 while not game.Started: 
     timeNow = time.time() * 1000
     if(timeNow > (lastUpdate + updateDelay)):
-        UpdateScreen = True
+        UpdateScreenStart = True
         onoff = not onoff
         lastUpdate = timeNow
 
-    if(UpdateScreen):
-        UpdateScreen = False
+    if(UpdateScreenStart):
+        UpdateScreenStart = False
         clear()
         print (asciiArt)
         if(not onoff):
@@ -466,12 +485,12 @@ while True:
         #displayEndScreen
         timeNow = time.time() * 1000
         if(timeNow > (lastUpdate + updateDelay)):
-            UpdateScreen = True
+            UpdateScreenEnd = True
             onoff = not onoff
             lastUpdate = timeNow
 
-        if(UpdateScreen):
-            UpdateScreen = False
+        if(UpdateScreenEnd):
+            UpdateScreenEnd = False
             clear()
             if(game.Won):
                 print(gameWonArt)
