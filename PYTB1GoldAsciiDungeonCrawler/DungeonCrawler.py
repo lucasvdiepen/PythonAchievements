@@ -321,21 +321,40 @@ class Game():
 
     def UpdateScreen(self):
         if(game.Started):
-            self.currentMap = self.map.GetMap()
+            currentMap = self.map.GetMap()
             clear()
-            for i in range(len(self.currentMap)):
+            lines = ""
+            for i in range(len(currentMap)):
+                
+                if(i % self.map.xLength == 0):
+                    #print("")
+                    if(not i == 0):
+                        lines += "\n"
+
+                char = currentMap[i]
+                if(char == "+"):
+                    char = bcolors.GREEN + char + bcolors.ENDC
+                elif(char == "x" or char == "*"):
+                    char = bcolors.RED + char + bcolors.ENDC
+
+                lines += char + " "
+                
+                """
                 if(i % self.map.xLength == 0):
                     print("")
                 
-                char = self.currentMap[i]
+                char = currentMap[i]
                 if(char == "+"):
                     char = bcolors.GREEN + char + bcolors.ENDC
                 elif(char == "x" or char == "*"):
                     char = bcolors.RED + char + bcolors.ENDC
                 sys.stdout.write(char + " ")
                 sys.stdout.flush()
+            """
 
-            print("\n\nHealth: " + str(game.player.health))
+            print(lines)
+
+            print("\nHealth: " + str(game.player.health))
 
             print("\n" + str(userInput))
 
