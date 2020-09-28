@@ -4,13 +4,25 @@ import time
 try:
     from pynput.keyboard import Key, Listener
 except ModuleNotFoundError:
-    print("Pynput module is missing. Install the pynput library please.")
+    print("pynput module is missing. Please install the pynput library.")
+    input("Press enter to continue")
+    exit()
+
+try:
+    from playsound import playsound
+except ModuleNotFoundError:
+    print("playsound module is missing. Please install the playsound library.")
     input("Press enter to continue")
     exit()
 
 import queue
 import random
 clear = lambda: os.system('cls')
+
+currentPath = os.getcwd()
+
+attackSoundEffect = currentPath + "\\SoundEffects\\soundeffect2.wav"
+killSoundEffect = currentPath + "\\SoundEffects\\soundeffect1.mp3"
 
 gameOverArt = """  ________                         ________
  /  _____/_____    _____   ____    \_____  \___  __ ___________
@@ -43,7 +55,7 @@ asciiArt = """                   (    )
                ((((  '.__\/__.')
                 ((,) /   ((()   )
                  "..-,  (()("   /
-            pils  _//.   ((() ."
+                  _//.   ((() ."
           _____ //,/" ___ ((( ', ___
                            ((  )
                             / /
@@ -61,14 +73,11 @@ userInput = ""
 MoveKeyDown = None
 
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
     ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 class Position():
     def __init__(self, x, y):
@@ -103,6 +112,11 @@ class Player():
             pass
         elif(charOnNewPosition == "x"):
             #enemy
+            #play sound effects
+            try:
+                playsound(attackSoundEffect, False)
+            except Exception:
+                pass
             enemy = game.GetEnemy(newPosition)#crashes sometimes because enemy move away
             enemy.canMove = False
             self.canMove = False
@@ -156,6 +170,11 @@ class Enemy():
             pass
         if(charOnNewPosition == "+"):
             #enemy on player
+            #sound effect
+            try:
+                playsound(attackSoundEffect, False)
+            except Exception:
+                pass
             game.player.Damage(random.randint(self.minDamage, self.maxDamage))
             self.Damage(random.randint(game.player.minDamage, game.player.maxDamage))
             self.canMove = False
@@ -268,6 +287,11 @@ class Game():
             if(self.enemies[i].position.x == position.x and self.enemies[i].position.y == position.y):
                 self.map.ChangeChar(self.enemies[i].position, " ")
                 self.enemies.pop(i)
+                #kill sound effect
+                try:
+                    playsound(killSoundEffect, False)
+                except Exception:
+                    pass
                 self.UpdateScreen()
                 break
 
@@ -289,9 +313,9 @@ class Game():
                 
                 char = self.currentMap[i]
                 if(char == "+"):
-                    char = bcolors.OKGREEN + char + bcolors.ENDC
+                    char = bcolors.GREEN + char + bcolors.ENDC
                 elif(char == "x" or char == "*"):
-                    char = bcolors.FAIL + char + bcolors.ENDC
+                    char = bcolors.RED + char + bcolors.ENDC
                 sys.stdout.write(char + " ")
                 sys.stdout.flush()
 
@@ -410,6 +434,8 @@ while not game.Started:
         print (asciiArt)
         if(not onoff):
             print("Press SPACE to play")
+        else:
+            print("")
 
         print("\n" + userInput)
             
@@ -446,6 +472,9 @@ while True:
             
             if(not onoff):
                 print("\nPress SPACE to play again")
+            else:
+                print("\n")
+            
             print("\n" + userInput)
 
 input("Press enter to exit")
