@@ -1,10 +1,30 @@
 import os
 import sys
 import time
-from pynput.keyboard import Key, Listener
+try:
+    from pynput.keyboard import Key, Listener
+except ModuleNotFoundError:
+    print("Pynput module is missing. Install the pynput library please.")
+    input("Press enter to continue")
+    exit()
+
 import queue
 import random
 clear = lambda: os.system('cls')
+
+gameOverArt = """  ________                         ________
+ /  _____/_____    _____   ____    \_____  \___  __ ___________
+/   \  ___\__  \  /     \_/ __ \    /   |   \  \/ // __ \_  __ \\
+\    \_\  \/ __ \|  Y Y  \  ___/   /    |    \   /\  ___/|  | \/
+ \______  (____  /__|_|  /\___  >  \_______  /\_/  \___  >__|
+        \/     \/      \/     \/           \/          \/"""
+
+gameWonArt = """_____.___.                __      __              
+\__  |   | ____  __ __   /  \    /  \____   ____  
+ /   |   |/  _ \|  |  \  \   \/\/   /  _ \ /    \ 
+ \____   (  <_> )  |  /   \        (  <_> )   |  \\
+ / ______|\____/|____/     \__/\  / \____/|___|  /
+ \/                             \/             \/ """
 
 asciiArt = """                   (    )
                   ((((()))
@@ -55,6 +75,11 @@ class Position():
         self.x = x
         self.y = y
 
+class HealthItem():
+    def __init__(self, giveHealth, position):
+        self.giveHealth = giveHealth
+        self.position = position
+
 class Player():
     health = 20
     position = Position(2, 5)
@@ -67,7 +92,8 @@ class Player():
         self.health -= damage
         if(self.health <= 0):
             #You are dead. Game over
-            print("Dead. Game over should happen here")
+            game.Won = False
+            game.Started = False
 
     def Move(self, x, y):
         newPosition = Position(self.position.x + x, self.position.y + y)
@@ -86,7 +112,17 @@ class Player():
             timeNow = time.time() * 1000
             enemy.cantMoveStartTime = timeNow
             game.player.cantMoveStartTime = timeNow
+        elif(charOnNewPosition == "@"):
+            #victory
+            game.Won = True
+            game.Started = False
         else:
+            if(charOnNewPosition == "$"):
+                #healthItem
+                healthItem = game.GetHealthItem(newPosition)
+                self.health += healthItem.giveHealth
+                game.RemoveHealthItem(healthItem.position)
+
             game.map.ChangeChar(self.position, " ")
             game.map.ChangeChar(newPosition, "+")
             self.position = newPosition
@@ -115,7 +151,7 @@ class Enemy():
     def MovePath(self):
         newPosition = Position(self.position.x + self.path[self.pathCount].x, self.position.y + self.path[self.pathCount].y)
         charOnNewPosition = game.map.GetChar(newPosition)
-        if(charOnNewPosition == "#" or charOnNewPosition == "*"):
+        if(charOnNewPosition == "#" or charOnNewPosition == "*" or charOnNewPosition == "$"):
             #cant move
             pass
         if(charOnNewPosition == "+"):
@@ -144,10 +180,14 @@ class Enemy():
             self.Dead = True
 
 class Map():
-    xLength = 17
-    yLength = 10
+    xLength = 0
+    yLength = 0
+    map = []
 
-    map = [
+    def Setup(self):
+        self.xLength = 17
+        self.yLength = 10
+        self.map = [
         "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
@@ -155,18 +195,22 @@ class Map():
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "@", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"
     ]
 
-    def __init__(self, player, enemies):
+    def __init__(self, player, enemies, healthItems):
+        self.Setup()
         #Set position of player and enemies in map
         self.ChangeChar(player.position, "+")
 
         #add all enemies
         for enemy in enemies:
             self.ChangeChar(enemy.position, "x")
+
+        for healthItem in healthItems:
+            self.ChangeChar(healthItem.position, "$")
 
     def FindIndexByCoordinates(self, position):
         index = position.y * self.xLength
@@ -183,19 +227,41 @@ class Map():
         return self.map
 
 class Game():
-    player = Player()
+    player = None
     enemies = []
-    map = Map(player, enemies)
+    healthItems = []
+    map = None
     Started = False
+    Won = False
 
     def __init__(self):
+        self.Setup()
+
+    def Setup(self):
+        self.player = Player()
         self.enemies.append(Enemy(10, Position(9, 5), [Position(0, -1), Position(0, -1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, -1), Position(0, -1)], 500, 2, 8))
         self.enemies.append(Enemy(10, Position(15, 2), [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(1, 0), Position(1, 0), Position(1, 0)], 500, 2, 8))
+        self.healthItems.append(HealthItem(10, Position(4, 4)))
+        self.map = Map(self.player, self.enemies, self.healthItems)
+
+    def Reset(self):
+        self.player = None
+        self.enemies = []
+        self.healthItems = []
+        self.map = None
+        self.Started = False
+        self.Won = False
+        self.Setup()
 
     def GetEnemy(self, position):
         for enemy in self.enemies:
             if(enemy.position.x == position.x and enemy.position.y == position.y):
                 return enemy
+
+    def GetHealthItem(self, position):
+        for healthItem in self.healthItems:
+            if(healthItem.position.x == position.x and healthItem.position.y == position.y):
+                return healthItem
 
     def RemoveEnemy(self, position):
         for i in range(len(self.enemies)):
@@ -205,27 +271,33 @@ class Game():
                 self.UpdateScreen()
                 break
 
+    def RemoveHealthItem(self, position):
+        for i in range(len(self.healthItems)):
+            if(self.healthItems[i].position.x == position.x and self.healthItems[i].position.y == position.y):
+                self.map.ChangeChar(self.healthItems[i].position, " ")
+                self.healthItems.pop(i)
+                UpdateScreen = True
+                break
 
     def UpdateScreen(self):
-        self.currentMap = self.map.GetMap()
-        clear()
-        for i in range(len(self.currentMap)):
-            if(i % self.map.xLength == 0):
-                print("")
-            
-            char = self.currentMap[i]
-            if(char == "+"):
-                char = bcolors.OKGREEN + char + bcolors.ENDC
-            elif(char == "x" or char == "*"):
-                char = bcolors.FAIL + char + bcolors.ENDC
-            sys.stdout.write(char + " ")
-            sys.stdout.flush()
+        if(game.Started):
+            self.currentMap = self.map.GetMap()
+            clear()
+            for i in range(len(self.currentMap)):
+                if(i % self.map.xLength == 0):
+                    print("")
+                
+                char = self.currentMap[i]
+                if(char == "+"):
+                    char = bcolors.OKGREEN + char + bcolors.ENDC
+                elif(char == "x" or char == "*"):
+                    char = bcolors.FAIL + char + bcolors.ENDC
+                sys.stdout.write(char + " ")
+                sys.stdout.flush()
 
-        print("\n\nHealth: " + str(game.player.health))
+            print("\n\nHealth: " + str(game.player.health))
 
-        print("\n" + str(userInput))
-
-        print("")
+            print("\n" + str(userInput))
 
 def MoveEnemies():
     global UpdateScreen
@@ -261,48 +333,49 @@ def on_press(key):
     global userInput
     #print('{0} pressed'.format(key))
 
-    if(game.Started):
-        if(key == Key.enter):
-            RunCommand(userInput)
-            userInput = ""
-            UpdateScreen = True
-        elif(key == Key.backspace):
-            userInput = userInput[:-1]
-            UpdateScreen = True
-        elif(key == Key.space):
+    if(key == Key.enter):
+        RunCommand(userInput)
+        userInput = ""
+        UpdateScreen = True
+    elif(key == Key.backspace):
+        userInput = userInput[:-1]
+        UpdateScreen = True
+    elif(key == Key.space):
+        if(game.Started):
             userInput += " "
             UpdateScreen = True
-        try:
-            userInput += str(key.char)
-            UpdateScreen = True
-        except Exception:
-            pass
+        else:
+            game.Reset()
+            game.Started = True 
+    try:
+        userInput += str(key.char)
+        UpdateScreen = True
+    except Exception:
+        pass
 
-        if(MoveKeyDown is None):
-            if(game.player.canMove):
-                if(key == Key.right):
-                    MoveKeyDown = key
-                    game.player.Move(1, 0)
-                    #callback_queue.put(lambda: game.player.Move(1, 0))
-                    UpdateScreen = True
-                elif(key == Key.left):
-                    MoveKeyDown = key
-                    game.player.Move(-1, 0)
-                    #callback_queue.put(lambda: game.player.Move(-1, 0))
-                    UpdateScreen = True
-                elif(key == Key.up):
-                    MoveKeyDown = key
-                    game.player.Move(0, -1)
-                    #callback_queue.put(lambda: game.player.Move(0, -1))
-                    UpdateScreen = True
-                elif(key == Key.down):
-                    MoveKeyDown = key
-                    game.player.Move(0, 1)
-                    #callback_queue.put(lambda: game.player.Move(0, 1))
-                    UpdateScreen = True
-    else:
-        if(key == Key.space):
-            game.Started = True
+    if(MoveKeyDown is None):
+        if(game.player.canMove):
+            if(key == Key.right):
+                MoveKeyDown = key
+                game.player.Move(1, 0)
+                #callback_queue.put(lambda: game.player.Move(1, 0))
+                UpdateScreen = True
+            elif(key == Key.left):
+                MoveKeyDown = key
+                game.player.Move(-1, 0)
+                #callback_queue.put(lambda: game.player.Move(-1, 0))
+                UpdateScreen = True
+            elif(key == Key.up):
+                MoveKeyDown = key
+                game.player.Move(0, -1)
+                #callback_queue.put(lambda: game.player.Move(0, -1))
+                UpdateScreen = True
+            elif(key == Key.down):
+                MoveKeyDown = key
+                game.player.Move(0, 1)
+                #callback_queue.put(lambda: game.player.Move(0, 1))
+                UpdateScreen = True
+            
 
 def on_release(key):
     global UpdateScreen
@@ -327,14 +400,19 @@ onoff = False
 while not game.Started: 
     timeNow = time.time() * 1000
     if(timeNow > (lastUpdate + updateDelay)):
+        UpdateScreen = True
+        onoff = not onoff
+        lastUpdate = timeNow
+
+    if(UpdateScreen):
+        UpdateScreen = False
         clear()
         print (asciiArt)
-        lastUpdate = timeNow
-        if(onoff):
-            onoff = False
-        else: 
-            onoff = True
+        if(not onoff):
             print("Press SPACE to play")
+
+        print("\n" + userInput)
+            
 
 while True:
     if(game.Started):
@@ -350,5 +428,24 @@ while True:
         if(UpdateScreen):
             game.UpdateScreen()
             UpdateScreen = False
+    else:
+        #displayEndScreen
+        timeNow = time.time() * 1000
+        if(timeNow > (lastUpdate + updateDelay)):
+            UpdateScreen = True
+            onoff = not onoff
+            lastUpdate = timeNow
+
+        if(UpdateScreen):
+            UpdateScreen = False
+            clear()
+            if(game.Won):
+                print(gameWonArt)
+            else:
+                print(gameOverArt)
+            
+            if(not onoff):
+                print("\nPress SPACE to play again")
+            print("\n" + userInput)
 
 input("Press enter to exit")
