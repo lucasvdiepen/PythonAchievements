@@ -112,20 +112,12 @@ class Player():
             pass
         elif(charOnNewPosition == "x"):
             #enemy
-            #play sound effects
             try:
-                playsound(attackSoundEffect, False)
+                enemy = game.GetEnemy(newPosition)#crashes sometimes because enemy move away
+                game.Attack(enemy)
             except Exception:
                 pass
-            enemy = game.GetEnemy(newPosition)#crashes sometimes because enemy move away
-            enemy.canMove = False
-            self.canMove = False
-            self.Damage(random.randint(enemy.minDamage, enemy.maxDamage))
-            enemy.Damage(random.randint(self.minDamage, self.maxDamage))
-            game.map.ChangeChar(enemy.position, "*")
-            timeNow = time.time() * 1000
-            enemy.cantMoveStartTime = timeNow
-            game.player.cantMoveStartTime = timeNow
+            
         elif(charOnNewPosition == "@"):
             #victory
             game.Won = True
@@ -154,7 +146,7 @@ class Enemy():
     maxDamage = 8
     cantMoveStartTime = 0
 
-    def __init__(self, health, position, path, walkDelay, minDamage, maxDamage):
+    def __init__(self, health, position, walkDelay, minDamage, maxDamage, path):
         self.health = health
         self.position = position
         self.path = path
@@ -170,19 +162,7 @@ class Enemy():
             pass
         if(charOnNewPosition == "+"):
             #enemy on player
-            #sound effect
-            try:
-                playsound(attackSoundEffect, False)
-            except Exception:
-                pass
-            game.player.Damage(random.randint(self.minDamage, self.maxDamage))
-            self.Damage(random.randint(game.player.minDamage, game.player.maxDamage))
-            self.canMove = False
-            game.player.canMove = False
-            timeNow = time.time() * 1000
-            self.cantMoveStartTime = timeNow
-            game.player.cantMoveStartTime = timeNow
-            game.map.ChangeChar(self.position, "*")
+            game.Attack(self)            
         else:
             game.map.ChangeChar(self.position, " ")
             game.map.ChangeChar(newPosition, "x")
@@ -224,13 +204,13 @@ class Map():
         " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
         "#", "#", "#", "#", "#", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "#", "#", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", "#", "#", "#", " ", "#", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", "#", "#", "#", " ", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"
     ]
 
@@ -273,11 +253,17 @@ class Game():
 
     def Setup(self):
         self.player = Player()
-        self.enemies.append(Enemy(10, Position(12, 3), [Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0)], 500, 2, 8))
-        self.enemies.append(Enemy(10, Position(18, 4), [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0)], 500, 2, 8))
-        self.enemies.append(Enemy(10, Position(12, 5), [Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0)], 500, 2, 8))
-        self.enemies.append(Enemy(10, Position(18, 6), [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0)], 500, 2, 8))
+        self.enemies.append(Enemy(10, Position(12, 3), 500, 2, 8, [Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0)]))
+        self.enemies.append(Enemy(10, Position(18, 4), 500, 2, 8, [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0)]))
+        self.enemies.append(Enemy(10, Position(12, 5), 500, 2, 8, [Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0)]))
+        self.enemies.append(Enemy(10, Position(18, 6), 500, 2, 8, [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0), Position(1, 0)]))
+        self.enemies.append(Enemy(10, Position(10, 17), 500, 5, 13, [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1), Position(1, 0), Position(1, 0), Position(1, 0), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1)]))
+        self.enemies.append(Enemy(10, Position(23, 13), 500, 2, 8, [Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1)]))
+        self.enemies.append(Enemy(10, Position(22, 9), 500, 2, 8, [Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1)]))
+        self.enemies.append(Enemy(10, Position(6, 12), 500, 2, 8, []))
+        self.enemies.append(Enemy(1, Position(4, 22), 500, 1, 1, []))
         self.healthItems.append(HealthItem(10, Position(4, 4)))
+        self.healthItems.append(HealthItem(10, Position(1, 23)))
         self.map = Map(self.player, self.enemies, self.healthItems)
 
     def Reset(self):
@@ -293,6 +279,21 @@ class Game():
         for enemy in self.enemies:
             if(enemy.position.x == position.x and enemy.position.y == position.y):
                 return enemy
+
+    def Attack(self, enemy):
+        try:
+            playsound(attackSoundEffect, False)
+        except Exception:
+            pass
+        game.player.Damage(random.randint(enemy.minDamage, enemy.maxDamage))
+        enemy.Damage(random.randint(game.player.minDamage, game.player.maxDamage))
+        enemy.canMove = False
+        game.player.canMove = False
+        timeNow = time.time() * 1000
+        enemy.cantMoveStartTime = timeNow
+        game.player.cantMoveStartTime = timeNow
+        game.map.ChangeChar(enemy.position, "*")
+        game.map.ChangeChar(game.player.position, "-")
 
     def GetHealthItem(self, position):
         for healthItem in self.healthItems:
@@ -334,7 +335,7 @@ class Game():
                         lines += "\n"
 
                 char = currentMap[i]
-                if(char == "+"):
+                if(char == "+" or char == "-"):
                     char = bcolors.GREEN + char + bcolors.ENDC
                 elif(char == "x" or char == "*"):
                     char = bcolors.RED + char + bcolors.ENDC
@@ -366,10 +367,11 @@ def MoveEnemies():
     for i in range(len(game.enemies) - 1, -1, -1):
         enemy = game.enemies[i]
         if(enemy.canMove):
-            if(timeNow > (enemy.lastPathChange + enemy.walkDelay)):
-                enemy.lastPathChange = timeNow
-                enemy.MovePath()
-                UpdateScreen = True
+            if(len(enemy.path) > 0):
+                if(timeNow > (enemy.lastPathChange + enemy.walkDelay)):
+                    enemy.lastPathChange = timeNow
+                    enemy.MovePath()
+                    UpdateScreen = True
         else:
             if(timeNow > (enemy.cantMoveStartTime + EnemyAttackDelay)):
                 enemy.canMove = True
@@ -382,11 +384,15 @@ def MoveEnemies():
 
     if(not game.player.canMove):
         if(timeNow > (game.player.cantMoveStartTime + AttackDelay)):
+            game.map.ChangeChar(game.player.position, "+")
             game.player.canMove = True
+            UpdateScreen = True
 
 def RunCommand(command):
     if(command.lower().strip() == "exit" or command.lower().strip() == "quit"):
         os._exit(0)
+    elif(command.lower().strip() == "pos"):
+        game.player.health = int(str(game.player.position.x) + "" + str(game.player.position.y))
 
 def on_press(key):
     global UpdateScreen
