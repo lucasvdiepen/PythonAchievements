@@ -115,8 +115,10 @@ class Player():
             try:
                 enemy = game.GetEnemy(newPosition)#crashes sometimes because enemy move away
                 game.Attack(enemy)
-            except Exception:
-                pass
+            except Exception as e:
+                f = open("debug.txt", "w")
+                f.write(e)
+                f.close()
             
         elif(charOnNewPosition == "@"):
             #victory
@@ -157,12 +159,12 @@ class Enemy():
     def MovePath(self):
         newPosition = Position(self.position.x + self.path[self.pathCount].x, self.position.y + self.path[self.pathCount].y)
         charOnNewPosition = game.map.GetChar(newPosition)
-        if(charOnNewPosition == "#" or charOnNewPosition == "*" or charOnNewPosition == "$"):
+        if(charOnNewPosition == "#" or charOnNewPosition == "*" or charOnNewPosition == "$" or charOnNewPosition == "-"):
             #cant move
             pass
-        if(charOnNewPosition == "+"):
+        elif(charOnNewPosition == "+"):
             #enemy on player
-            game.Attack(self)            
+            game.Attack(self)
         else:
             game.map.ChangeChar(self.position, " ")
             game.map.ChangeChar(newPosition, "x")
@@ -188,13 +190,13 @@ class Map():
         self.yLength = 25
         self.map = [
         "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", "@", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", "#", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", "#", " ", "#", "#", "#", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#",
+        "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", "#", " ", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", "#", "#", "#", "#", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "#", "#", "#",
         " ", " ", " ", " ", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", "#", " ", " ", " ",
@@ -205,12 +207,12 @@ class Map():
         "#", "#", "#", "#", "#", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "#", "#", "#",
         "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
         "#", " ", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", "#", "#", "#", " ", "#", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", "#", "#", "#", " ", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
-        "#", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", "#",
+        "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", "#", "#", "#", "#", "#", "#",
+        "#", " ", "#", "#", "#", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", "#",
+        "#", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#", "#", " ", "#",
+        "#", "#", "#", "#", " ", "#", " ", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", "#", " ", "#", "#", " ", "#",
+        "#", "#", "#", "#", " ", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", "#", "#", "#", " ", "#", "#", " ", "#",
+        "#", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", " ", " ", " ", " ", " ", "#", "#", "@", "#",
         "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", " ", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"
     ]
 
@@ -260,10 +262,17 @@ class Game():
         self.enemies.append(Enemy(10, Position(10, 17), 500, 5, 13, [Position(-1, 0), Position(-1, 0), Position(-1, 0), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1), Position(1, 0), Position(1, 0), Position(1, 0), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1)]))
         self.enemies.append(Enemy(10, Position(23, 13), 500, 2, 8, [Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1)]))
         self.enemies.append(Enemy(10, Position(22, 9), 500, 2, 8, [Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1)]))
+        self.enemies.append(Enemy(5, Position(23, 3), 500, 2, 5, [Position(1, 0), Position(1, 0), Position(1, 0), Position(-1, 0), Position(-1, 0), Position(-1, 0)]))
+        self.enemies.append(Enemy(13, Position(26, 19), 500, 5, 13, [Position(0, 1), Position(0, 1), Position(0, 1), Position(0, -1), Position(0, -1), Position(0, -1)]))
+        self.enemies.append(Enemy(13, Position(23, 19), 500, 5, 13, [Position(0, 1), Position(0, 1), Position(0, 1), Position(0, 1), Position(0, -1), Position(0, -1), Position(0, -1), Position(0, -1)]))
         self.enemies.append(Enemy(10, Position(6, 12), 500, 2, 8, []))
+        self.enemies.append(Enemy(10, Position(23, 15), 500, 2, 8, []))
+        self.enemies.append(Enemy(10, Position(22, 15), 500, 2, 8, []))
         self.enemies.append(Enemy(1, Position(4, 22), 500, 1, 1, []))
-        self.healthItems.append(HealthItem(10, Position(4, 4)))
+        self.healthItems.append(HealthItem(10, Position(1, 1)))
         self.healthItems.append(HealthItem(10, Position(1, 23)))
+        self.healthItems.append(HealthItem(30, Position(26, 1)))
+        self.healthItems.append(HealthItem(10, Position(24, 19)))
         self.map = Map(self.player, self.enemies, self.healthItems)
 
     def Reset(self):
@@ -285,15 +294,16 @@ class Game():
             playsound(attackSoundEffect, False)
         except Exception:
             pass
-        game.player.Damage(random.randint(enemy.minDamage, enemy.maxDamage))
-        enemy.Damage(random.randint(game.player.minDamage, game.player.maxDamage))
         enemy.canMove = False
         game.player.canMove = False
+        game.player.Damage(random.randint(enemy.minDamage, enemy.maxDamage))
+        enemy.Damage(random.randint(game.player.minDamage, game.player.maxDamage))
         timeNow = time.time() * 1000
         enemy.cantMoveStartTime = timeNow
         game.player.cantMoveStartTime = timeNow
         game.map.ChangeChar(enemy.position, "*")
         game.map.ChangeChar(game.player.position, "-")
+        UpdateScreen = True
 
     def GetHealthItem(self, position):
         for healthItem in self.healthItems:
