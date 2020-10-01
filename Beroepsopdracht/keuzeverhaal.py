@@ -11,7 +11,14 @@ class Question():
 
 questions = []
 
-#questions.append(Question("", "", {"": "", "": "", "": ""}))
+#questions.append(Question("", """ """, {"": "", "": ""}))
+questions.append(Question("START", """Je moet zo snel mogelijk vluchten. 
+
+Neem je nog afscheid van je familie en vrienden?""", {"Ja": "1", "Nee": "1"}))
+
+questions.append(Question("1", """Je zit nu in Damascus je moet naar Beiroet. 
+
+Hoe ga je daarnaartoe?""", {"Lopend": "2", "Met de bus": "3"}))
 
 def GetQuestion(questionName):
     for question in questions:
@@ -19,7 +26,7 @@ def GetQuestion(questionName):
             return question
 
 def AskQuestions():
-    nextQuestion = "Start"
+    nextQuestion = "START"
     while True:
         currentQuestion = GetQuestion(nextQuestion)
         nextQuestion = AskQuestion(currentQuestion.question, currentQuestion.options)
@@ -32,30 +39,23 @@ def AskQuestions():
 def AskQuestion(question, options):
     if len(options) > len(chars):
         return
-    rndChoices = list(range(0, len(options)))
-    correctAnswerIndex = -1
 
     nextQuestions = {"nothing": "nothing"}
 
     print(question + "\n")
 
-    for j in range(len(rndChoices)):
-        rnd = random.choice(rndChoices)
+    for j in range(len(options)):
         values = options.values()
-        nextQuestions[chars[j]] = list(values)[rnd]
+        nextQuestions[chars[j]] = list(values)[j]
         keys = options.keys()
-        print(chars[j] + ". " + list(keys)[rnd])
-        if(rnd == (len(options) - 1)):
-            correctAnswerIndex = j
-        
-        rndChoices.remove(rnd)
+        print(chars[j] + ". " + list(keys)[j])
     
     print("")
     while True:
         answer = input("> ")
         if(len(answer) == 1 and answer.isalpha()):
             if(len(options) >= (chars.index(answer.upper()) + 1)):
-                time.sleep(1)
+                time.sleep(0.5)
 
                 print("\n")
                 return nextQuestions[answer.upper()]
