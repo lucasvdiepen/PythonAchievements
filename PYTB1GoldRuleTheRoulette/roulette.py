@@ -42,8 +42,8 @@ class Place:
     multiplier = 0
     leftTop = 0
     rightCorner = 0
-    def __init__(self, number, color, multiplier, leftTop, rightCorner):
-        self.number = number
+    def __init__(self, text, color, multiplier, leftTop, rightCorner):
+        self.text = text
         self.color = color
         self.multiplier = multiplier
         self.leftTop = leftTop
@@ -83,39 +83,39 @@ class Game:
         self.places.append(Place("9", PlaceColor.RED, 1, Position(13, 4), Position(15, 6)))
         self.places.append(Place("12", PlaceColor.RED, 1, Position(17, 4), Position(19, 6)))
         self.places.append(Place("15", PlaceColor.BLACK, 1, Position(21, 4), Position(23, 6)))
-        self.places.append(Place("18", PlaceColor.RED, 1, Position(21, 4), Position(23, 6)))
-        self.places.append(Place("21", PlaceColor.RED, 1, Position(25, 4), Position(27, 6)))
-        self.places.append(Place("24", PlaceColor.BLACK, 1, Position(29, 4), Position(31, 6)))
-        self.places.append(Place("27", PlaceColor.RED, 1, Position(33, 4), Position(35, 6)))
-        self.places.append(Place("30", PlaceColor.RED, 1, Position(37, 4), Position(39, 6)))
-        self.places.append(Place("33", PlaceColor.BLACK, 1, Position(41, 4), Position(43, 6)))
-        self.places.append(Place("36", PlaceColor.RED, 1, Position(45, 4), Position(47, 6)))
+        self.places.append(Place("18", PlaceColor.RED, 1, Position(25, 4), Position(27, 6)))
+        self.places.append(Place("21", PlaceColor.RED, 1, Position(29, 4), Position(31, 6)))
+        self.places.append(Place("24", PlaceColor.BLACK, 1, Position(33, 4), Position(35, 6)))
+        self.places.append(Place("27", PlaceColor.RED, 1, Position(37, 4), Position(39, 6)))
+        self.places.append(Place("30", PlaceColor.RED, 1, Position(41, 4), Position(43, 6)))
+        self.places.append(Place("33", PlaceColor.BLACK, 1, Position(45, 4), Position(47, 6)))
+        self.places.append(Place("36", PlaceColor.RED, 1, Position(49, 4), Position(51, 6)))
         #
         self.places.append(Place("2", PlaceColor.BLACK, 1, Position(5, 8), Position(7, 10)))
         self.places.append(Place("5", PlaceColor.RED, 1, Position(9, 8), Position(11, 10)))
         self.places.append(Place("8", PlaceColor.BLACK, 1, Position(13, 8), Position(15, 10)))
         self.places.append(Place("11", PlaceColor.BLACK, 1, Position(17, 8), Position(19, 10)))
-        self.places.append(Place("18", PlaceColor.RED, 1, Position(21, 8), Position(23, 10)))
-        self.places.append(Place("17", PlaceColor.BLACK, 1, Position(21, 8), Position(23, 10)))
-        self.places.append(Place("20", PlaceColor.BLACK, 1, Position(25, 8), Position(27, 10)))
-        self.places.append(Place("23", PlaceColor.RED, 1, Position(29, 8), Position(31, 10)))
-        self.places.append(Place("26", PlaceColor.BLACK, 1, Position(33, 8), Position(35, 10)))
-        self.places.append(Place("29", PlaceColor.BLACK, 1, Position(37, 8), Position(39, 10)))
-        self.places.append(Place("32", PlaceColor.RED, 1, Position(41, 8), Position(43, 10)))
-        self.places.append(Place("35", PlaceColor.BLACK, 1, Position(45, 8), Position(47, 10)))
+        self.places.append(Place("14", PlaceColor.RED, 1, Position(21, 8), Position(23, 10)))
+        self.places.append(Place("17", PlaceColor.BLACK, 1, Position(25, 8), Position(27, 10)))
+        self.places.append(Place("20", PlaceColor.BLACK, 1, Position(29, 8), Position(31, 10)))
+        self.places.append(Place("23", PlaceColor.RED, 1, Position(33, 8), Position(35, 10)))
+        self.places.append(Place("26", PlaceColor.BLACK, 1, Position(37, 8), Position(39, 10)))
+        self.places.append(Place("29", PlaceColor.BLACK, 1, Position(41, 8), Position(43, 10)))
+        self.places.append(Place("32", PlaceColor.RED, 1, Position(45, 8), Position(47, 10)))
+        self.places.append(Place("35", PlaceColor.BLACK, 1, Position(49, 8), Position(71, 10)))
         #
         self.places.append(Place("1", PlaceColor.RED, 1, Position(5, 12), Position(7, 14)))
         self.places.append(Place("4", PlaceColor.BLACK, 1, Position(9, 12), Position(11, 14)))
         self.places.append(Place("7", PlaceColor.RED, 1, Position(13, 12), Position(15, 14)))
         self.places.append(Place("10", PlaceColor.BLACK, 1, Position(17, 12), Position(19, 14)))
         self.places.append(Place("13", PlaceColor.BLACK, 1, Position(21, 12), Position(23, 14)))
-        self.places.append(Place("16", PlaceColor.RED, 1, Position(21, 12), Position(23, 14)))
-        self.places.append(Place("19", PlaceColor.RED, 1, Position(25, 12), Position(27, 14)))
-        self.places.append(Place("22", PlaceColor.BLACK, 1, Position(29, 12), Position(31, 14)))
-        self.places.append(Place("25", PlaceColor.RED, 1, Position(33, 12), Position(35, 14)))
-        self.places.append(Place("28", PlaceColor.BLACK, 1, Position(37, 12), Position(39, 14)))
-        self.places.append(Place("31", PlaceColor.BLACK, 1, Position(41, 12), Position(43, 14)))
-        self.places.append(Place("34", PlaceColor.RED, 1, Position(45, 12), Position(47, 14)))
+        self.places.append(Place("16", PlaceColor.RED, 1, Position(25, 12), Position(27, 14)))
+        self.places.append(Place("19", PlaceColor.RED, 1, Position(29, 12), Position(31, 14)))
+        self.places.append(Place("22", PlaceColor.BLACK, 1, Position(33, 12), Position(35, 14)))
+        self.places.append(Place("25", PlaceColor.RED, 1, Position(37, 12), Position(39, 14)))
+        self.places.append(Place("28", PlaceColor.BLACK, 1, Position(41, 12), Position(43, 14)))
+        self.places.append(Place("31", PlaceColor.BLACK, 1, Position(45, 12), Position(47, 14)))
+        self.places.append(Place("34", PlaceColor.RED, 1, Position(49, 12), Position(51, 14)))
         
 
     def FindIndexByCoordinates(self, position):
@@ -131,8 +131,9 @@ class Game:
 
     def GetPlaceByPosition(self, position):
         for place in self.places:
-            if(place.leftTop.x >= position.x and place.leftTop.y >= position.y and place.rightCorner.x <= position.x and place.rightCorner.y <= position.y):
-                return place
+            if(place.leftTop.x <= position.x and place.leftTop.y <= position.y):
+                if(place.rightCorner.x >= position.x and place.rightCorner.y >= position.y):
+                    return place
 
     def GetPlaceByText(self, text):
         for place in self.places:
@@ -146,13 +147,13 @@ class Game:
             nextPosition = Position((nextPosition.x + x), (nextPosition.y + y))
             if(nextIsInBlock):
                 newPlace = self.GetPlaceByPosition(nextPosition)
-                print(newPlace)
                 if(newPlace is None):
                     #dead end
                     pass
                 else:
-                    currentPosition = nextPosition
-                    self.UpdateScreen()
+                    print(newPlace.text)
+                    self.currentPosition = nextPosition
+                    #self.UpdateScreen()
 
                 break
             
