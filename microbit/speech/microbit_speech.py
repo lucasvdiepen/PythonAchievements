@@ -10,21 +10,22 @@ rest = ["hard", "at school", "coffee"]
 currentPitch = 100
 
 def sayTheWords1(word):
+    global currentPitch
     speech.say(word, speed=120, pitch=currentPitch, throat=100, mouth=100)
     sleep(500)
+    currentPitch = display.read_light_level()
     
 def sayTheWords2():
+    global currentPitch
     willekeurigGetal = random.randint(0, len(onderwerp) -1)
     print(willekeurigGetal)
     display.show(willekeurigGetal)
-    currentPitch = display.read_light_level()
     sayTheWords1(onderwerp[willekeurigGetal])
-    currentPitch = display.read_light_level()
     sayTheWords1(werkwoord[willekeurigGetal])
     sayTheWords1(rest[willekeurigGetal])
 
 while True:
-    readingX = accelerometer.get_x()
+    #readingX = accelerometer.get_x()
     
     #print(display.read_light_level())
     
