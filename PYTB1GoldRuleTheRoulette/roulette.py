@@ -4,7 +4,7 @@ from pynput.keyboard import Key, Listener
 
 clear = lambda: os.system('cls')
 
-os.system("color 27")
+#os.system("color 27")
 
 class Position:
     def __init__(self, x, y):
@@ -17,6 +17,7 @@ class Direction(Enum):
     RIGHT = 2
     DOWN = 3
 
+#ANSI COLOR CODES
 class bcolors:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -29,6 +30,8 @@ class bcolors:
     UNDERLINE = '\033[4m'
     BACKGROUNDRED = '\u001b[41;1m'
     BACKGROUNDBLUE = '\u001b[44m'
+    BACKGROUNDBLACK = '\u001b[40m'
+    BACKGROUNDGREEN = '\u001b[42m'
 
 class PlaceColor(Enum):
     RED = 0
@@ -102,7 +105,7 @@ class Game:
         self.places.append(Place("26", PlaceColor.BLACK, 1, Position(37, 8), Position(39, 10)))
         self.places.append(Place("29", PlaceColor.BLACK, 1, Position(41, 8), Position(43, 10)))
         self.places.append(Place("32", PlaceColor.RED, 1, Position(45, 8), Position(47, 10)))
-        self.places.append(Place("35", PlaceColor.BLACK, 1, Position(49, 8), Position(71, 10)))
+        self.places.append(Place("35", PlaceColor.BLACK, 1, Position(49, 8), Position(51, 10)))
         #
         self.places.append(Place("1", PlaceColor.RED, 1, Position(5, 12), Position(7, 14)))
         self.places.append(Place("4", PlaceColor.BLACK, 1, Position(9, 12), Position(11, 14)))
@@ -116,7 +119,13 @@ class Game:
         self.places.append(Place("28", PlaceColor.BLACK, 1, Position(41, 12), Position(43, 14)))
         self.places.append(Place("31", PlaceColor.BLACK, 1, Position(45, 12), Position(47, 14)))
         self.places.append(Place("34", PlaceColor.RED, 1, Position(49, 12), Position(51, 14)))
-        
+
+    """    
+    def FindCoordinatesByIndex(self, index):
+        y = index / self.xLength
+        x = index - y
+        return Position(x, y)
+    """
 
     def FindIndexByCoordinates(self, position):
         index = position.y * self.xLength
@@ -151,9 +160,9 @@ class Game:
                     #dead end
                     pass
                 else:
-                    print(newPlace.text)
+                    #print(newPlace.text)
                     self.currentPosition = nextPosition
-                    #self.UpdateScreen()
+                    self.UpdateScreen()
 
                 break
             
@@ -163,13 +172,53 @@ class Game:
 
     def UpdateScreen(self):
         lines = ""
+
+        #set current selected position coordinates in a array
+        place = game.GetPlaceByPosition(game.currentPosition)
+        selectedIndexes = []
+        nextX = place.leftTop.x
+        nextY = place.leftTop.y
+        while True:
+            selectedIndexes.append(game.FindIndexByCoordinates(Position(nextX, nextY)))
+            if(nextX == place.rightCorner.x and nextY == place.rightCorner.y):
+                break
+            nextX += 1
+            if(nextX > place.rightCorner.x):
+                nextX = place.leftTop.x
+                nextY += 1
+
         for i in range(len(self.table)):
             if(i % self.xLength == 0):
-                #print("")
                 if(not i == 0):
                     lines += "\n"
 
             char = self.table[i]
+            fullChar = ""
+            endCount = 0
+            if(i in selectedIndexes):
+                if(char != "" and char != " " and char != "-" and char != "+" and char != "|"):
+                    place = game.GetPlaceByText(char)
+                    if(place.color == PlaceColor.RED):
+                        char = bcolors.BACKGROUNDRED + char + bcolors.END
+                    if(place.color == PlaceColor.BLACK):
+                        char = bcolors.BACKGROUNDBLACK + char + bcolors.END
+                        
+                char = bcolors.BACKGROUNDBLUE + char + bcolors.END
+                endCount += 1
+
+            if(char != "" and char != " " and char != "-" and char != "+" and char != "|"):
+                pass
+            else:
+                char = bcolors.BACKGROUNDGREEN + char + bcolors.END
+            
+            if(char.isdigit() and char != "0"):
+                place = game.GetPlaceByText(char)
+                if(place.color == PlaceColor.RED):
+                    char = bcolors.BACKGROUNDRED + char + bcolors.END
+                if(place.color == PlaceColor.BLACK):
+                    char = bcolors.BACKGROUNDBLACK + char + bcolors.END
+
+            
             """place = self.GetPlaceByText(char)
             if(not place is None):
                 if(place.color == PlaceColor.RED):
